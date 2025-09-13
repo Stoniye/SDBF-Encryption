@@ -1,12 +1,39 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 int encrypt();
 int decrypt();
 
-int main() {
-    return decrypt();
+char *action;
+char *path;
+
+int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        printf("Missing required arguments, please read README at https://github.com/Stoniye/SDBF-Encryption");
+        return 1;
+    }
+
+    action = strdup(argv[1]);
+    if (!action) {
+        perror("Failed to allocate memory");
+        return 1;
+    }
+
+    path = strdup(argv[2]);
+    if (!path) {
+        perror("Failed to allocate memory");
+        return 1;
+    }
+
+    if (strcmp(action, "en") == 0) {
+        return encrypt();
+    }
+    if (strcmp(action, "de") == 0) {
+        return decrypt();
+    }
+
+    printf("Unknown action: %s\n, please read README at https://github.com/Stoniye/SDBF-Encryption", action);
+    return 1;
 }
 
 int encrypt() {
@@ -30,13 +57,17 @@ int encrypt() {
     }
 
     //Open files
-    FILE *in = fopen("/home/elias/Coding/SDBF-Encryption/test.txt", "rb");
+    char fullPath[512];
+
+    snprintf(fullPath, sizeof(fullPath), "%s.txt", path);
+    FILE *in = fopen(fullPath, "rb");
     if (!in) {
         perror("Error opening input file");
         return 1;
     }
 
-    FILE *out = fopen("/home/elias/Coding/SDBF-Encryption/test.sdbf", "wb");
+    snprintf(fullPath, sizeof(fullPath), "%s.sdbf", path);
+    FILE *out = fopen(fullPath, "wb");
     if (!out) {
         perror("Error opening output file");
         fclose(in);
@@ -76,7 +107,7 @@ int encrypt() {
 }
 
 int decrypt() {
-    //Get password for encryption
+    //Get password for decryption
     char password[256];
 
     printf("Enter password: ");
@@ -96,20 +127,24 @@ int decrypt() {
     }
 
     //Open files
-    FILE *in = fopen("/home/elias/Coding/SDBF-Encryption/test.sdbf", "rb");
+    char fullPath[512];
+
+    snprintf(fullPath, sizeof(fullPath), "%s.sdbf", path);
+    FILE *in = fopen(fullPath, "rb");
     if (!in) {
         perror("Error opening input file");
         return 1;
     }
 
-    FILE *out = fopen("/home/elias/Coding/SDBF-Encryption/test.txt", "wb");
+    snprintf(fullPath, sizeof(fullPath), "%s.txt", path);
+    FILE *out = fopen(fullPath, "wb");
     if (!out) {
         perror("Error opening output file");
         fclose(in);
         return 1;
     }
 
-    //Encrypt file
+    //Decrypt file
     int c;
     int i = 0;
     while ((c = fgetc(in)) != EOF) {
