@@ -1,0 +1,49 @@
+# SDBF Encryption
+
+A free and open-source encryption tool.
+
+---
+
+## About
+
+**SDBF Encryption** is a personal project to explore encryption methods. The name **SDBF** stands for **S**tring **D**ependent **B**it **F**lipping, a concept I've been thinking about and wanted to test its feasibility.
+
+---
+
+## Disclaimer
+
+⚠️ **Warning: This is a proof-of-concept project and should NOT be used for sensitive or confidential data.** ⚠️
+
+This tool was created for educational purposes and to experiment with a own encryption algorithm. There are many established and more robust encryption programs available that are suitable for securing important data. I am not liable for any data loss, corruption, or security breaches that may occur from using this software. Using this program could potentially expose unencrypted data chunks within the encrypted file.
+
+---
+
+## Features
+
+* **Encrypts and Decrypts** files of any type using a password.
+
+---
+
+## Usage
+
+Encrypting a file:
+```bash
+sdbf en <filePath>
+```
+
+Decrypting a file:
+```bash
+sdbf de <filePath>
+```
+
+After executing this command you will be prompted to input a password, this will be used to encrypting or decrypting your file
+
+# Contributing
+
+I welcome all contributions!
+
+Feel free to open an issue, suggest a feature, or submit a pull request.
+
+# Releases
+
+Stable builds will be published regularly in the [Releases tab](https://github.com/Stoniye/SDBF-Encryption/releases) for download.
