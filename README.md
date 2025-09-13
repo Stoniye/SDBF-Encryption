@@ -38,6 +38,32 @@ sdbf de <filePath>
 
 After executing this command you will be prompted to input a password, this will be used to encrypting or decrypting your file
 
+## How It Works
+
+This is a simple program, but I think it implements a reasonable level of security. The program stores both the file and the password in binary form, then cycles through the bits of the file. Based on the bits of the password, it flips certain bits in the file, producing a corrupted and encrypted version.
+
+```c
+for (int bit = 7; bit >= 0; bit--) {
+    int currentBit = (byte >> bit) & 1;
+
+    //Flip bits based on the password
+    int modifiedBit = 0;
+    if (passwordBits[i % bitCount] == 1) {
+        modifiedBit = currentBit ^ 1;
+    }else {
+        modifiedBit = currentBit;
+    }
+
+    newByte |= (modifiedBit << bit);
+    i++;
+}
+```
+
+### Potential Issues
+
+* The program cycles through every bit of the file, which can result in long processing times for larger files.
+* Since only some bits are flipped while others remain unchanged, some patterns from the original file may still be exposed in the encrypted output.
+
 # Contributing
 
 I welcome all contributions!
