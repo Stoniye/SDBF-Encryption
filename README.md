@@ -64,6 +64,18 @@ for (int bit = 7; bit >= 0; bit--) {
 * The program cycles through every bit of the file, which can result in long processing times for larger files.
 * Since only some bits are flipped while others remain unchanged, some patterns from the original file may still be exposed in the encrypted output.
 
+## .sdbf File
+
+I created my own file format for encrypted files, using the `.sdbf` extension.
+
+### Header
+
+The header consists of three parts:
+
+1. **Magic number**: The first 4 bytes. I chose `"SDBF"` as the magic number for `.sdbf` files.
+2. **Version**: A single byte indicating the version of the encryption algorithm used, ensuring compatibility with future changes.
+3. **Original file extension**: 5 bytes reserved to store the original file extension (e.g., `.txt`, `.png`). If the extension is shorter than 5 bytes, the remaining bytes are padded with zeros.
+
 # Contributing
 
 I welcome all contributions!
