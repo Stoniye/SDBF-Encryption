@@ -13,7 +13,7 @@ int decrypt();
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
-        printf("Missing required arguments, please read README at https://github.com/Stoniye/SDBF-Encryption");
+        printf("Missing required arguments, please read README at https://github.com/Stoniye/SDBF-Encryption\n");
         return 1;
     }
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
         return decrypt();
     }
 
-    printf("Unknown action: %s\n, please read README at https://github.com/Stoniye/SDBF-Encryption", action);
+    printf("Unknown action: %s\n, please read README at https://github.com/Stoniye/SDBF-Encryption\n", action);
     return 1;
 }
 

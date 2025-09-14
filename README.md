@@ -66,7 +66,7 @@ for (int bit = 7; bit >= 0; bit--) {
 
 ## .sdbf File
 
-I created my own file format for encrypted files, using the `.sdbf` extension.
+I defined my own file format for encrypted files, using the `.sdbf` extension.
 
 ### Header
 
