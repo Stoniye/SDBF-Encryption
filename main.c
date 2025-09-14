@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 
-int encrypt();
-int decrypt();
+#define extLength 5
+
+const char *header = "SDBF";
 
 char *action;
 char *path;
+
+int encrypt();
+int decrypt();
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
@@ -13,22 +17,19 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    //Get arguments
     action = strdup(argv[1]);
-    if (!action) {
-        perror("Failed to allocate memory");
-        return 1;
-    }
-
     path = strdup(argv[2]);
-    if (!path) {
-        perror("Failed to allocate memory");
-        return 1;
-    }
 
+    //Encrypt File
     if (strcmp(action, "en") == 0) {
+        path = strtok(path, ".");
         return encrypt();
     }
+
+    //Decrypt file
     if (strcmp(action, "de") == 0) {
+        path = strtok(path, ".");
         return decrypt();
     }
 
@@ -37,6 +38,9 @@ int main(int argc, char *argv[]) {
 }
 
 int encrypt() {
+    //Get original extension
+    char *extension = strtok(NULL, ".");
+
     //Get password for encryption
     char password[256];
 
@@ -59,7 +63,7 @@ int encrypt() {
     //Open files
     char fullPath[512];
 
-    snprintf(fullPath, sizeof(fullPath), "%s.txt", path);
+    snprintf(fullPath, sizeof(fullPath), "%s.%s", path, extension);
     FILE *in = fopen(fullPath, "rb");
     if (!in) {
         perror("Error opening input file");
@@ -72,6 +76,35 @@ int encrypt() {
         perror("Error opening output file");
         fclose(in);
         return 1;
+    }
+
+    //Check file extension length
+    len = strlen(extension);
+    if (len > extLength) {
+        printf("File extension to long, only file extension with a max length of %d are supported", extLength);
+        fclose(in);
+        fclose(out);
+        return 1;
+    }
+
+    //Store Data type in header
+    len = strlen(header);
+    for (size_t i = 0; i < len; i++) {
+        fputc(header[i], out);
+    }
+
+    //Store Version in header
+    fputc(2, out);
+
+    //Store original extension in header
+    size_t dif = extLength - len;
+    for (size_t i = 0; i < len; i++) {
+        fputc(extension[i], out);
+    }
+
+    //Fill up reserved space with zeros in header
+    for (size_t i = 0; i < dif; i++) {
+        fputc(0, out);
     }
 
     //Encrypt file
@@ -102,6 +135,8 @@ int encrypt() {
 
     fclose(in);
     fclose(out);
+
+    printf("File encrypted successfully\n");
 
     return 0;
 }
@@ -136,7 +171,35 @@ int decrypt() {
         return 1;
     }
 
-    snprintf(fullPath, sizeof(fullPath), "%s.txt", path);
+    //Check file type
+    int i;
+    for (i = 0; i < 4; ++i) {
+        int byte = fgetc(in);
+        if (byte != header[i]) {
+            printf("Input file is not a .sdbf file: Header mismatch\n");
+            fclose(in);
+            return 1;
+        }
+    }
+
+    //Get SDBF encryption version
+    int version = fgetc(in); //No difference in decryption, not needed right now
+
+    //Get original extension
+    char extension[extLength + 1] = {0};
+    for (i = 0; i < extLength; ++i) {
+        int byte = fgetc(in);
+        if (byte == EOF) {
+            fclose(in);
+            return 1;
+        }
+        if (byte != 0) {
+            extension[i] = (char)byte;
+        }
+    }
+    extension[i] = '\0';
+
+    snprintf(fullPath, sizeof(fullPath), "%s.%s", path, extension);
     FILE *out = fopen(fullPath, "wb");
     if (!out) {
         perror("Error opening output file");
@@ -146,7 +209,7 @@ int decrypt() {
 
     //Decrypt file
     int c;
-    int i = 0;
+    i = 0;
     while ((c = fgetc(in)) != EOF) {
         unsigned char byte = (unsigned char)c;
         unsigned char newByte = 0;
@@ -172,6 +235,8 @@ int decrypt() {
 
     fclose(in);
     fclose(out);
+
+    printf("File decrypted successfully\n");
 
     return 0;
 }
