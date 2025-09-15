@@ -15,7 +15,16 @@ int decrypt();
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
-        printf("Missing required arguments, please read README at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n");
+        if (argc == 2) {
+            action = strdup(argv[1]);
+
+            if (strcmp(action, "help") == 0) {
+                printf("To Encrypt a file use \"sdbf en <filePath>\"\nTo Decrypt a file use \"sdbf de <filePath>\"\nFor more info read the usage documentation at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n");
+                return 0;
+            }
+        }
+
+        printf("Missing required arguments, use argument 'help' for help\n");
         return 1;
     }
 
