@@ -6,6 +6,9 @@
 *.ko
 *.obj
 *.elf
+*.sdbf
+*.txt
+sdbf
 
 # Linker output
 *.ilk
