@@ -2,6 +2,7 @@
 #include <string.h>
 
 #define extLength 5
+#define majorVersion 2
 
 const char *header = "SDBF";
 
@@ -13,7 +14,7 @@ int decrypt();
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
-        printf("Missing required arguments, please read README at https://github.com/Stoniye/SDBF-Encryption\n");
+        printf("Missing required arguments, please read README at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n");
         return 1;
     }
 
@@ -33,7 +34,7 @@ int main(int argc, char *argv[]) {
         return decrypt();
     }
 
-    printf("Unknown action: %s\n, please read README at https://github.com/Stoniye/SDBF-Encryption\n", action);
+    printf("Unknown action: %s\n, please read README at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n", action);
     return 1;
 }
 
@@ -94,7 +95,7 @@ int encrypt() {
     }
 
     //Store Version in header
-    fputc(2, out);
+    fputc(majorVersion, out);
 
     //Store original extension in header
     size_t dif = extLength - len;
@@ -183,7 +184,11 @@ int decrypt() {
     }
 
     //Get SDBF encryption version
-    int version = fgetc(in); //No difference in decryption, not needed right now
+    int version = fgetc(in);
+    if (version != majorVersion) {
+        printf("File got encrypted with sdbf major version %i, you are running major version %i. You can download older versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", version, majorVersion);
+        return 1;
+    }
 
     //Get original extension
     char extension[extLength + 1] = {0};

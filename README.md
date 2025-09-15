@@ -8,21 +8,15 @@ A free and open-source encryption tool.
 
 **SDBF Encryption** is a personal project to explore encryption methods. The name **SDBF** stands for **S**tring **D**ependent **B**it **F**lipping, a concept I've been thinking about and wanted to test its feasibility.
 
----
-
 ## Disclaimer
 
 ⚠️ **Warning: This is a proof-of-concept project and should NOT be used for sensitive or confidential data.** ⚠️
 
 This tool was created for educational purposes and to experiment with a own encryption algorithm. There are many established and more robust encryption programs available that are suitable for securing important data. I am not liable for any data loss, corruption, or security breaches that may occur from using this software. Using this program could potentially expose unencrypted data chunks within the encrypted file.
 
----
-
 ## Features
 
 * **Encrypts and Decrypts** files of any type using a password.
-
----
 
 ## Usage
 
@@ -78,11 +72,15 @@ The header consists of three parts:
 
 <img width="3068" height="449" alt="sdbf_file_header" src="https://github.com/user-attachments/assets/dea9235c-8f62-4195-8033-65bc73ac2f45" />
 
+---
+
 # Contributing
 
 I welcome all contributions!
 
 Feel free to open an issue, suggest a feature, or submit a pull request.
+
+---
 
 # Releases
 
