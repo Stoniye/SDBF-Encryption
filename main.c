@@ -2,6 +2,7 @@
 #include <string.h>
 
 #define extLength 5
+#define minPassLength 5
 #define majorVersion 2
 
 const char *header = "SDBF";
@@ -49,6 +50,15 @@ int encrypt() {
     fgets(password, sizeof(password), stdin);
     password[strcspn(password, "\n")] = '\0';
 
+    if (strlen(password) == 0) {
+        printf("No password entered!\n");
+        return 1;
+    }
+    if (strlen(password) < minPassLength) {
+        printf("Password to short, has to be at least %i character long, the longer the higher the security!\n", minPassLength);
+        return 1;
+    }
+
     //Store bits of password
     size_t len = strlen(password);
     int passwordBits[len * 8];
@@ -67,14 +77,14 @@ int encrypt() {
     snprintf(fullPath, sizeof(fullPath), "%s.%s", path, extension);
     FILE *in = fopen(fullPath, "rb");
     if (!in) {
-        perror("Error opening input file");
+        perror("Error opening input file\n");
         return 1;
     }
 
     snprintf(fullPath, sizeof(fullPath), "%s.sdbf", path);
     FILE *out = fopen(fullPath, "wb");
     if (!out) {
-        perror("Error opening output file");
+        perror("Error opening output file\n");
         fclose(in);
         return 1;
     }
@@ -82,7 +92,7 @@ int encrypt() {
     //Check file extension length
     len = strlen(extension);
     if (len > extLength) {
-        printf("File extension to long, only file extension with a max length of %d are supported", extLength);
+        printf("File extension to long, only file extension with a max length of %d are supported\n", extLength);
         fclose(in);
         fclose(out);
         return 1;
@@ -150,6 +160,15 @@ int decrypt() {
     fgets(password, sizeof(password), stdin);
     password[strcspn(password, "\n")] = '\0';
 
+    if (strlen(password) == 0) {
+        printf("No password entered!\n");
+        return 1;
+    }
+    if (strlen(password) < minPassLength) {
+        printf("Password to short, has to be at least %i character long, the longer the higher the security!\n", minPassLength);
+        return 1;
+    }
+
     //Store bits of password
     size_t len = strlen(password);
     int passwordBits[len * 8];
@@ -168,7 +187,7 @@ int decrypt() {
     snprintf(fullPath, sizeof(fullPath), "%s.sdbf", path);
     FILE *in = fopen(fullPath, "rb");
     if (!in) {
-        perror("Error opening input file");
+        perror("Error opening input file\n");
         return 1;
     }
 
@@ -207,7 +226,7 @@ int decrypt() {
     snprintf(fullPath, sizeof(fullPath), "%s.%s", path, extension);
     FILE *out = fopen(fullPath, "wb");
     if (!out) {
-        perror("Error opening output file");
+        perror("Error opening output file\n");
         fclose(in);
         return 1;
     }
