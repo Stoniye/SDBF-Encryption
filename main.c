@@ -6,6 +6,7 @@
 #define majorVersion 2
 
 const char *header = "SDBF";
+const char *version = "2.0.2";
 
 char *action;
 char *path;
@@ -20,6 +21,10 @@ int main(int argc, char *argv[]) {
 
             if (strcmp(action, "help") == 0) {
                 printf("To Encrypt a file use \"sdbf en <filePath>\"\nTo Decrypt a file use \"sdbf de <filePath>\"\nFor more info read the usage documentation at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n");
+                return 0;
+            }
+            if (strcmp(action, "version") == 0) {
+                printf("You are running sdbf version %s\nYou can download other versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", version);
                 return 0;
             }
         }
@@ -214,7 +219,7 @@ int decrypt() {
     //Get SDBF encryption version
     int version = fgetc(in);
     if (version != majorVersion) {
-        printf("File got encrypted with sdbf major version %i, you are running major version %i. You can download older versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", version, majorVersion);
+        printf("File got encrypted with sdbf major version %i, you are running major version %i. You can download other versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", version, majorVersion);
         return 1;
     }
 

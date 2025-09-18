@@ -20,17 +20,150 @@ This tool was created for educational purposes and to experiment with a own encr
 
 ## Usage
 
+SDBF has no graphical user interface; it's entirely terminal-based. To use it, open the terminal and navigate to the directory where you downloaded the file. To open the directory, run this command in your terminal:
+
+<details>
+<summary>Windows</summary>
+
+Command:
+```powershell
+cd <pathToDirectory>
+```
+
+<br>
+
+Example:
+```powershell
+cd C:\stonie\Downloads
+```
+
+</details>
+
+<details>
+<summary>Linux</summary>
+
+Command:
+```bash
+cd <pathToDirectory>
+```
+
+<br>
+
+Example:
+```bash
+cd /home/stonie/Downloads
+```
+
+<br>
+
+On Linux, you may need to grant the file execution permission with this command:
+
+```bash
+chmod +x sdbf-linux
+```
+
+</details>
+
+To encrypt or decrypt a file, execute this command:
+
+<details>
+<summary>Windows</summary>
+
+Encrypting a file:
+```powershell
+.\sdbf-windows.exe en <filePath>
+```
+
+Decrypting a file:
+```powershell
+.\sdbf-windows.exe de <filePath>
+```
+
+<br>
+
+Example:
+```powershell
+.\sdbf-windows.exe en C:\stonie\Documents\text.txt
+```
+
+</details>
+
+<details>
+<summary>Linux</summary>
+
 Encrypting a file:
 ```bash
-sdbf en <filePath>
+./sdbf-linux en <filePath>
 ```
 
 Decrypting a file:
 ```bash
-sdbf de <filePath>
+./sdbf-linux de <filePath>
 ```
 
-After executing this command you will be prompted to input a password, this will be used to encrypting or decrypting your file
+<br>
+
+Example:
+```bash
+./sdbf-linux en /home/stonie/Documents/text.txt
+```
+
+</details>
+
+After executing this command, you will be prompted to input a password. This will be used for encrypting or decrypting your file.
+
+## Optional: Add SDBF to PATH
+
+If you don’t want to navigate to the directory and type `./sdbf-linux` or `.\sdbf-windows.exe` every time, you can add the program to your system’s **PATH**. After doing this, you can simply run `sdbf ...` from any location in your terminal.
+
+<details>
+<summary>Windows</summary>
+
+1. Move `sdbf-windows.exe` to a permanent folder (for example: `C:\Program Files\SDBF`).
+2. Press **Win + R**, type `sysdm.cpl`, and press Enter.
+3. Go to the **Advanced** tab → click **Environment Variables**.
+4. Under **System variables**, find and select `Path`, then click **Edit**.
+5. Click **New** and add the folder where you placed `sdbf-windows.exe` (e.g., `C:\Program Files\SDBF`).
+6. Click **OK** to save and close all dialogs.
+7. Open a new terminal (PowerShell or CMD) and test:
+
+   ```powershell
+   sdbf en C:/stonie/Documents/text.txt
+   ```
+
+</details>
+
+<details>
+<summary>Linux</summary>
+
+1. Move `sdbf-linux` to your local folder:
+
+   ```bash
+   sudo mv sdbf-linux /usr/local/bin
+   ```
+
+   (`/usr/local/bin` is a standard place for custom executables).
+
+2. Ensure it is executable:
+
+   ```bash
+   sudo chmod +x /usr/local/bin/sdbf-linux
+   ```
+
+3. Now you can run it directly from anywhere:
+
+   ```bash
+   sdbf en /home/stonie/Documents/text.txt
+   ```
+
+> If you don’t want to move the file, you can instead add its current folder to your PATH by editing your shell config file (`~/.bashrc`, `~/.zshrc`, etc.):
+>
+> ```bash
+> echo 'export PATH="$PATH:/home/stonie/Downloads"' >> ~/.bashrc
+> source ~/.bashrc
+> ```
+
+</details>
 
 ## How It Works
 
@@ -79,6 +212,16 @@ The header consists of three parts:
 I welcome all contributions!
 
 Feel free to open an issue, suggest a feature, or submit a pull request.
+
+### Development Setup
+
+To build the project from source, you’ll need a C compiler such as **gcc** or **clang**.
+
+Example build command:
+
+```bash
+gcc -o sdbf main.c
+````
 
 ---
 
