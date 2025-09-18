@@ -20,11 +20,11 @@ int main(int argc, char *argv[]) {
             action = strdup(argv[1]);
 
             if (strcmp(action, "help") == 0) {
-                printf("To Encrypt a file use \"sdbf en <filePath>\"\nTo Decrypt a file use \"sdbf de <filePath>\"\nFor more info read the usage documentation at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n");
+                printf("To Encrypt a file use \"sdbf en <filePath>\"\nTo Decrypt a file use \"sdbf de <filePath>\"\nTo get your sdbf version use \"sdbf version\"\n\nFor more info read the usage documentation at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n");
                 return 0;
             }
             if (strcmp(action, "version") == 0) {
-                printf("You are running sdbf version %s\nYou can download other versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", version);
+                printf("You are running sdbf version %s\n\nYou can download other versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", version);
                 return 0;
             }
         }
