@@ -217,9 +217,9 @@ int decrypt() {
     }
 
     //Get SDBF encryption version
-    int version = fgetc(in);
-    if (version != majorVersion) {
-        printf("File got encrypted with sdbf major version %i, you are running major version %i. You can download other versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", version, majorVersion);
+    int encVersion = fgetc(in);
+    if (encVersion != majorVersion) {
+        printf("File got encrypted with sdbf major version %i, you are running major version %i. You can download other versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", encVersion, majorVersion);
         return 1;
     }
 
