@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         return decrypt();
     }
 
-    printf("Unknown action: %s\n, please read README at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n", action);
+    printf("Unknown action: %s, please read the README at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n", action);
     return 1;
 }
 
