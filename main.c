@@ -20,11 +20,11 @@ int main(int argc, char *argv[]) {
             action = strdup(argv[1]);
 
             if (strcmp(action, "help") == 0) {
-                printf("To Encrypt a file use \"sdbf en <filePath>\"\nTo Decrypt a file use \"sdbf de <filePath>\"\nTo get your sdbf version use \"sdbf version\"\n\nFor more info read the usage documentation at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n");
+                printf("To Encrypt a file use \"sdbf en <filePath>\"\nTo Decrypt a file use \"sdbf de <filePath>\"\nTo get your sdbf version use \"sdbf version\"\n\nFor more info read the usage documentation at https://gitlab.com/Stoniye/sdbf-encryption#usage\n");
                 return 0;
             }
             if (strcmp(action, "version") == 0) {
-                printf("You are running sdbf version %s\n\nYou can download other versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", version);
+                printf("You are running sdbf version %s\n\nYou can download other versions here https://gitlab.com/Stoniye/sdbf-encryption/-/releases\n", version);
                 return 0;
             }
         }
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
         return decrypt();
     }
 
-    printf("Unknown action: %s, please read the README at https://github.com/Stoniye/SDBF-Encryption?tab=readme-ov-file#usage\n", action);
+    printf("Unknown action: %s, please read README at https://gitlab.com/Stoniye/sdbf-encryption#usage\n", action);
     return 1;
 }
 
@@ -219,7 +219,7 @@ int decrypt() {
     //Get SDBF encryption version
     int encVersion = fgetc(in);
     if (encVersion != majorVersion) {
-        printf("File got encrypted with sdbf major version %i, you are running major version %i. You can download other versions here https://github.com/Stoniye/SDBF-Encryption/releases\n", encVersion, majorVersion);
+        printf("File got encrypted with sdbf major version %i, you are running major version %i. You can download other versions here https://gitlab.com/Stoniye/sdbf-encryption/-/releases\n", encVersion, majorVersion);
         return 1;
     }
 

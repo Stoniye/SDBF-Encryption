@@ -227,4 +227,4 @@ gcc -o sdbf main.c
 
 # Releases
 
-Stable builds will be published regularly in the [Releases tab](https://github.com/Stoniye/SDBF-Encryption/releases) for download.
+Stable builds will be published regularly in the [Releases tab](https://gitlab.com/Stoniye/sdbf-encryption/-/releases) for download.
