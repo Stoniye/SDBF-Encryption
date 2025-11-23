@@ -203,7 +203,7 @@ The header consists of three parts:
 2. **Version**: A single byte indicating the version of the encryption algorithm used, ensuring compatibility with future changes.
 3. **Original file extension**: 5 bytes reserved to store the original file extension (e.g., `.txt`, `.png`). If the extension is shorter than 5 bytes, the remaining bytes are padded with zeros.
 
-<img width="3068" height="449" alt="sdbf_file_header" src="https://github.com/user-attachments/assets/dea9235c-8f62-4195-8033-65bc73ac2f45" />
+<img width="3068" height="449" alt="sdbf_file_header" src="https://gitlab.com/Stoniye/sdbf-encryption/-/raw/main/header.webp" />
 
 ---
 
