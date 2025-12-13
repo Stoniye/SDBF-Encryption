@@ -1,18 +1,21 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+#include "xxhash/xxhash.h"
 
 #define extLength 5
 #define minPassLength 5
-#define majorVersion 2
+#define majorVersion 3
 
 const char *header = "SDBF";
-const char *version = "2.0.2";
+const char *version = "3.0.0";
 
 char *action;
 char *path;
 
 int encrypt();
 int decrypt();
+void hash(const char* password, uint8_t* hash_output);
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
@@ -73,13 +76,17 @@ int encrypt() {
         return 1;
     }
 
+    //Hash password
+    uint8_t password_hashed[16];
+    hash(password, password_hashed);
+
     //Store bits of password
-    size_t len = strlen(password);
+    size_t len = 16;
     int passwordBits[len * 8];
     int bitCount = 0;
     for (size_t i = 0; i < len; i++) {
         for (int j = 7; j >= 0; j--) {
-            int bit = (password[i] >> j) & 1;
+            int bit = (password_hashed[i] >> j) & 1;
             passwordBits[bitCount] = bit;
             bitCount++;
         }
@@ -135,6 +142,8 @@ int encrypt() {
     //Encrypt file
     int c;
     int i = 0;
+    const int flipBit = passwordBits[0] ^ passwordBits[127];
+    const int split = (((passwordBits[5] << 3) | (passwordBits[4] << 2) | (passwordBits[3] << 1) | passwordBits[2]) % 4) + 2;
     while ((c = fgetc(in)) != EOF) {
         unsigned char byte = (unsigned char)c;
         unsigned char newByte = 0;
@@ -142,7 +151,7 @@ int encrypt() {
         for (int bit = 7; bit >= 0; bit--) {
             int currentBit = (byte >> bit) & 1;
 
-            //Flip bits based on the password
+            //Flip bits based on the password hash
             int modifiedBit = 0;
             if (passwordBits[i % bitCount] == 1) {
                 modifiedBit = currentBit ^ 1;
@@ -183,13 +192,17 @@ int decrypt() {
         return 1;
     }
 
+    //Hash password
+    uint8_t password_hashed[16];
+    hash(password, password_hashed);
+
     //Store bits of password
-    size_t len = strlen(password);
+    size_t len = 16;
     int passwordBits[len * 8];
     int bitCount = 0;
     for (size_t i = 0; i < len; i++) {
         for (int j = 7; j >= 0; j--) {
-            int bit = (password[i] >> j) & 1;
+            int bit = (password_hashed[i] >> j) & 1;
             passwordBits[bitCount] = bit;
             bitCount++;
         }
@@ -248,6 +261,8 @@ int decrypt() {
     //Decrypt file
     int c;
     i = 0;
+    const int flipBit = passwordBits[0];
+    const int split = (((passwordBits[5] << 3) | (passwordBits[4] << 2) | (passwordBits[3] << 1) | passwordBits[2]) % 4) + 2;
     while ((c = fgetc(in)) != EOF) {
         unsigned char byte = (unsigned char)c;
         unsigned char newByte = 0;
@@ -255,7 +270,7 @@ int decrypt() {
         for (int bit = 7; bit >= 0; bit--) {
             int currentBit = (byte >> bit) & 1;
 
-            //Flip bits based on the password
+            //Flip bits based on the password hash
             int modifiedBit = 0;
             if (passwordBits[i % bitCount] == 1) {
                 modifiedBit = currentBit ^ 1;
@@ -277,4 +292,9 @@ int decrypt() {
     printf("File decrypted successfully\n");
 
     return 0;
+}
+
+void hash(const char* password, uint8_t* hash_output) {
+    const XXH128_hash_t hash = XXH3_128bits_withSeed(password, strlen(password), 0);
+    memcpy(hash_output, &hash, 16);
 }

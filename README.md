@@ -59,7 +59,7 @@ cd /home/stonie/Downloads
 On Linux, you may need to grant the file execution permission with this command:
 
 ```bash
-chmod +x sdbf-linux
+chmod +x sdbf
 ```
 
 </details>
@@ -71,19 +71,19 @@ To encrypt or decrypt a file, execute this command:
 
 Encrypting a file:
 ```powershell
-.\sdbf-windows.exe en <filePath>
+.\sdbf.exe en <filePath>
 ```
 
 Decrypting a file:
 ```powershell
-.\sdbf-windows.exe de <filePath>
+.\sdbf.exe de <filePath>
 ```
 
 <br>
 
 Example:
 ```powershell
-.\sdbf-windows.exe en C:\stonie\Documents\text.txt
+.\sdbf.exe en C:\stonie\Documents\text.txt
 ```
 
 </details>
@@ -93,19 +93,19 @@ Example:
 
 Encrypting a file:
 ```bash
-./sdbf-linux en <filePath>
+./sdbf en <filePath>
 ```
 
 Decrypting a file:
 ```bash
-./sdbf-linux de <filePath>
+./sdbf de <filePath>
 ```
 
 <br>
 
 Example:
 ```bash
-./sdbf-linux en /home/stonie/Documents/text.txt
+./sdbf en /home/stonie/Documents/text.txt
 ```
 
 </details>
@@ -114,16 +114,16 @@ After executing this command, you will be prompted to input a password. This wil
 
 ## Optional: Add SDBF to PATH
 
-If you don’t want to navigate to the directory and type `./sdbf-linux` or `.\sdbf-windows.exe` every time, you can add the program to your system’s **PATH**. After doing this, you can simply run `sdbf ...` from any location in your terminal.
+If you don’t want to navigate to the directory and type `./sdbf` or `.\sdbf.exe` every time, you can add the program to your system’s **PATH**. After doing this, you can simply run `sdbf ...` from any location in your terminal.
 
 <details>
 <summary>Windows</summary>
 
-1. Move `sdbf-windows.exe` to a permanent folder (for example: `C:\Program Files\SDBF`).
+1. Move `sdbf.exe` to a permanent folder (for example: `C:\Program Files\SDBF`).
 2. Press **Win + R**, type `sysdm.cpl`, and press Enter.
 3. Go to the **Advanced** tab → click **Environment Variables**.
 4. Under **System variables**, find and select `Path`, then click **Edit**.
-5. Click **New** and add the folder where you placed `sdbf-windows.exe` (e.g., `C:\Program Files\SDBF`).
+5. Click **New** and add the folder where you placed `sdbf.exe` (e.g., `C:\Program Files\SDBF`).
 6. Click **OK** to save and close all dialogs.
 7. Open a new terminal (PowerShell or CMD) and test:
 
@@ -136,10 +136,10 @@ If you don’t want to navigate to the directory and type `./sdbf-linux` or `.\s
 <details>
 <summary>Linux</summary>
 
-1. Move `sdbf-linux` to your local folder:
+1. Move `sdbf` to your local folder:
 
    ```bash
-   sudo mv sdbf-linux /usr/local/bin
+   sudo mv sdbf /usr/local/bin
    ```
 
    (`/usr/local/bin` is a standard place for custom executables).
@@ -147,7 +147,7 @@ If you don’t want to navigate to the directory and type `./sdbf-linux` or `.\s
 2. Ensure it is executable:
 
    ```bash
-   sudo chmod +x /usr/local/bin/sdbf-linux
+   sudo chmod +x /usr/local/bin/sdbf
    ```
 
 3. Now you can run it directly from anywhere:
@@ -167,13 +167,13 @@ If you don’t want to navigate to the directory and type `./sdbf-linux` or `.\s
 
 ## How It Works
 
-This is a simple program, but I think it implements a reasonable level of security. The program stores both the file and the password in binary form, then cycles through the bits of the file. Based on the bits of the password, it flips certain bits in the file, producing a corrupted and encrypted version.
+This is a simple program, but I think it implements a reasonable level of security. The program hashes the password with the xxhash algorithm to ensure a consistent length no matter how long the password is, then cycles through the bits of the file. Based on the bits of the password, it flips certain bits in the file, producing a corrupted and encrypted version.
 
 ```c
 for (int bit = 7; bit >= 0; bit--) {
     int currentBit = (byte >> bit) & 1;
 
-    //Flip bits based on the password
+    //Flip bits based on the password hash
     int modifiedBit = 0;
     if (passwordBits[i % bitCount] == 1) {
         modifiedBit = currentBit ^ 1;
@@ -220,11 +220,13 @@ To build the project from source, you’ll need a C compiler such as **gcc** or 
 Example build command:
 
 ```bash
-gcc -o sdbf main.c
+gcc main.c xxhash/xxhash.c -o sdbf
 ````
 
 ---
 
 # Releases
 
-Stable builds will be published regularly in the [Releases tab](https://gitlab.com/Stoniye/sdbf-encryption/-/releases) for download.
+Stable builds are published regularly in the [Releases tab](https://gitlab.com/Stoniye/sdbf-encryption/-/releases).
+
+Binaries are generated through GitLab Pipelines to ensure a transparent build process, so you can be confident that each release corresponds exactly to the source code in this repository.

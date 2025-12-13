@@ -1,0 +1,110 @@
+stages:
+  - build
+  - publish
+  - release
+
+variables:
+  PACKAGE_NAME: "${CI_COMMIT_TAG}-binaries"
+
+build-linux:
+  stage: build
+  image: gcc:latest
+  script:
+    - gcc main.c xxhash/xxhash.c -o sdbf
+  artifacts:
+    paths:
+      - sdbf
+    expire_in: 1 days
+  rules:
+    - if: $CI_COMMIT_TAG
+
+build-windows:
+  stage: build
+  image: ubuntu:22.04
+  script:
+    - apt-get update -qq && apt-get install -y gcc-mingw-w64-x86-64
+    - x86_64-w64-mingw32-gcc main.c xxhash/xxhash.c -o sdbf.exe
+  artifacts:
+    paths:
+      - sdbf.exe
+    expire_in: 1 days
+  rules:
+    - if: $CI_COMMIT_TAG
+
+publish-binaries:
+  stage: publish
+  image: curlimages/curl:latest
+  needs:
+  - job: build-linux
+    artifacts: true
+  - job: build-windows
+    artifacts: true
+  script:
+    #Install jq from GitHub release for JSON parsing
+    - curl -L -o jq https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-linux-amd64
+    - chmod +x jq
+
+    #Upload binaries to package registry
+    - |
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file sdbf \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${PACKAGE_NAME}/${CI_COMMIT_TAG:-$CI_COMMIT_SHA}/sdbf"
+    - |
+      curl --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file sdbf.exe \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${PACKAGE_NAME}/${CI_COMMIT_TAG:-$CI_COMMIT_SHA}/sdbf.exe"
+
+    #Scrape package id
+    - |
+      PACKAGE_JSON=$(curl --silent --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages?package_type=generic&package_name=${PACKAGE_NAME}&package_version=${CI_COMMIT_TAG:-$CI_COMMIT_SHA}")
+      PACKAGE_ID=$(echo "$PACKAGE_JSON" | ./jq -r '.[0].id')
+    
+    #Scrape file id's
+    - |
+      FILES_JSON=$(curl --silent --header "JOB-TOKEN: $CI_JOB_TOKEN" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/${PACKAGE_ID}/package_files")
+    
+    - LINUX_FILE_ID=$(echo "$FILES_JSON" | ./jq -r '.[] | select(.file_name=="sdbf") | .id')
+    - WINDOWS_FILE_ID=$(echo "$FILES_JSON" | ./jq -r '.[] | select(.file_name=="sdbf.exe") | .id')
+
+    - echo "LINUX_FILE_ID=$LINUX_FILE_ID" >> release.env
+    - echo "WINDOWS_FILE_ID=$WINDOWS_FILE_ID" >> release.env
+  artifacts:
+    reports:
+      dotenv: release.env
+  rules:
+    - if: $CI_COMMIT_TAG
+
+generate-changelog:
+  stage: release
+  image: alpine:latest
+  script:
+    - apk add --no-cache git
+    - |
+      PREV_TAG=$(git describe --tags --abbrev=0 ${CI_COMMIT_TAG}^ 2>/dev/null || echo "initial")
+      git log --no-merges --pretty=format:"- %s (%h)" ${PREV_TAG}..${CI_COMMIT_TAG} > changelog.md
+      echo "# Commits for release ${CI_COMMIT_TAG}" | cat - changelog.md > temp.md && mv temp.md changelog.md
+  artifacts:
+    paths:
+      - changelog.md
+    expire_in: 1 hour
+  rules:
+    - if: $CI_COMMIT_TAG
+
+create-release:
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  needs:
+    - publish-binaries
+    - generate-changelog
+  script:
+    - echo "Creating release"
+  release:
+    tag_name: $CI_COMMIT_TAG
+    description: './changelog.md'
+    assets:
+      links:
+        - name: sdbf-linux
+          url: ${CI_PROJECT_URL}/-/package_files/${LINUX_FILE_ID}/download
+        - name: sdbf-windows
+          url: ${CI_PROJECT_URL}/-/package_files/${WINDOWS_FILE_ID}/download
+  rules:
+    - if: $CI_COMMIT_TAG
