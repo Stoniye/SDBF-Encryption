@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: © 2025 Elias Steininger <elias.st4600@gmail.com>
+// SPDX-License-Identifier: MIT License
+
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -5,10 +8,10 @@
 
 #define extLength 5
 #define minPassLength 5
-#define majorVersion 3
+#define majorVersion 4
 
 const char *header = "SDBF";
-const char *version = "3.0.0";
+const char *version = "4.0.0";
 
 char *action;
 char *path;
@@ -82,12 +85,12 @@ int encrypt() {
 
     //Store bits of password
     size_t len = 16;
-    int passwordBits[len * 8];
+    int hashBits[len * 8];
     int bitCount = 0;
     for (size_t i = 0; i < len; i++) {
         for (int j = 7; j >= 0; j--) {
             int bit = (password_hashed[i] >> j) & 1;
-            passwordBits[bitCount] = bit;
+            hashBits[bitCount] = bit;
             bitCount++;
         }
     }
@@ -142,8 +145,7 @@ int encrypt() {
     //Encrypt file
     int c;
     int i = 0;
-    const int flipBit = passwordBits[0] ^ passwordBits[127];
-    const int split = (((passwordBits[5] << 3) | (passwordBits[4] << 2) | (passwordBits[3] << 1) | passwordBits[2]) % 4) + 2;
+    const int flipBit = hashBits[0] ^ hashBits[127];
     while ((c = fgetc(in)) != EOF) {
         unsigned char byte = (unsigned char)c;
         unsigned char newByte = 0;
@@ -153,7 +155,7 @@ int encrypt() {
 
             //Flip bits based on the password hash
             int modifiedBit = 0;
-            if (passwordBits[i % bitCount] == 1) {
+            if (hashBits[i % bitCount] == flipBit) {
                 modifiedBit = currentBit ^ 1;
             }else {
                 modifiedBit = currentBit;
@@ -198,12 +200,12 @@ int decrypt() {
 
     //Store bits of password
     size_t len = 16;
-    int passwordBits[len * 8];
+    int hashBits[len * 8];
     int bitCount = 0;
     for (size_t i = 0; i < len; i++) {
         for (int j = 7; j >= 0; j--) {
             int bit = (password_hashed[i] >> j) & 1;
-            passwordBits[bitCount] = bit;
+            hashBits[bitCount] = bit;
             bitCount++;
         }
     }
@@ -261,8 +263,7 @@ int decrypt() {
     //Decrypt file
     int c;
     i = 0;
-    const int flipBit = passwordBits[0];
-    const int split = (((passwordBits[5] << 3) | (passwordBits[4] << 2) | (passwordBits[3] << 1) | passwordBits[2]) % 4) + 2;
+    const int flipBit = hashBits[0] ^ hashBits[127];
     while ((c = fgetc(in)) != EOF) {
         unsigned char byte = (unsigned char)c;
         unsigned char newByte = 0;
@@ -272,7 +273,7 @@ int decrypt() {
 
             //Flip bits based on the password hash
             int modifiedBit = 0;
-            if (passwordBits[i % bitCount] == 1) {
+            if (hashBits[i % bitCount] == flipBit) {
                 modifiedBit = currentBit ^ 1;
             }else {
                 modifiedBit = currentBit;

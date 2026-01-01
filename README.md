@@ -167,7 +167,11 @@ If you don’t want to navigate to the directory and type `./sdbf` or `.\sdbf.ex
 
 ## How It Works
 
-This is a simple program, but I think it implements a reasonable level of security. The program hashes the password with the xxhash algorithm to ensure a consistent length no matter how long the password is, then cycles through the bits of the file. Based on the bits of the password, it flips certain bits in the file, producing a corrupted and encrypted version.
+This is a simple program, but I think it implements a reasonable level of security. The program hashes the password with the xxhash algorithm to ensure a consistent length no matter how long the password is, then cycles through the bits of the file. Based on the bits of the password, it flips certain bits in the file, producing a corrupted and encrypted version. If the bit of the file is flipped on a 1 or 0 of the password is decided by an XOR operation of the first and last bit of the hash to minimize patterns in the process.
+
+```c
+const int flipBit = hashBits[0] ^ hashBits[127];
+```
 
 ```c
 for (int bit = 7; bit >= 0; bit--) {
@@ -175,7 +179,7 @@ for (int bit = 7; bit >= 0; bit--) {
 
     //Flip bits based on the password hash
     int modifiedBit = 0;
-    if (passwordBits[i % bitCount] == 1) {
+    if (hashBits[i % bitCount] == flipBit) {
         modifiedBit = currentBit ^ 1;
     }else {
         modifiedBit = currentBit;
@@ -190,6 +194,7 @@ for (int bit = 7; bit >= 0; bit--) {
 
 * The program cycles through every bit of the file, which can result in long processing times for larger files.
 * Since only some bits are flipped while others remain unchanged, some patterns from the original file may still be exposed in the encrypted output.
+* A pattern attack could be executed on the .sdbf file based on the header of the original file format (.txt, .png, ...) or other predictable things.
 
 ## .sdbf File
 
@@ -222,6 +227,13 @@ Example build command:
 ```bash
 gcc main.c xxhash/xxhash.c -o sdbf
 ````
+
+### Legal requirements
+
+By submitting a pull request, you represent and warrant that:
+- Your contribution is your original work or you have the necessary rights to submit it.
+- It does not infringe any third-party copyrights, trademarks, or other intellectual property rights.
+- You grant the project the right to use, modify, and distribute your contribution under the project's license.
 
 ---
 

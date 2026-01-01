@@ -76,6 +76,8 @@ publish-binaries:
 generate-changelog:
   stage: release
   image: alpine:latest
+  variables:
+    GIT_DEPTH: 0
   script:
     - apk add --no-cache git
     - |
